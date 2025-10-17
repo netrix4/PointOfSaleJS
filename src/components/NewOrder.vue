@@ -25,7 +25,6 @@
 
 <script setup>
 import SideMenuItem from "./SideMenuItem.vue";
-console.log("Esto es neworders");
 </script>
 
 <style>
