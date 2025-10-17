@@ -1,0 +1,262 @@
+import { createReactiveSystem } from './system.mjs';
+const queuedEffects = [];
+const { link, unlink, propagate, checkDirty, shallowPropagate, } = createReactiveSystem({
+    update(node) {
+        if (node.depsTail !== undefined) {
+            return updateComputed(node);
+        }
+        else {
+            return updateSignal(node);
+        }
+    },
+    notify,
+    unwatched(node) {
+        if (!(node.flags & 1)) {
+            effectScopeOper.call(node);
+        }
+        else if (node.depsTail !== undefined) {
+            node.depsTail = undefined;
+            node.flags = 17;
+            purgeDeps(node);
+        }
+    },
+});
+let cycle = 0;
+let batchDepth = 0;
+let notifyIndex = 0;
+let queuedEffectsLength = 0;
+let activeSub;
+export function getActiveSub() {
+    return activeSub;
+}
+export function setActiveSub(sub) {
+    const prevSub = activeSub;
+    activeSub = sub;
+    return prevSub;
+}
+export function getBatchDepth() {
+    return batchDepth;
+}
+export function startBatch() {
+    ++batchDepth;
+}
+export function endBatch() {
+    if (!--batchDepth) {
+        flush();
+    }
+}
+export function isSignal(fn) {
+    return fn.name === 'bound ' + signalOper.name;
+}
+export function isComputed(fn) {
+    return fn.name === 'bound ' + computedOper.name;
+}
+export function isEffect(fn) {
+    return fn.name === 'bound ' + effectOper.name;
+}
+export function isEffectScope(fn) {
+    return fn.name === 'bound ' + effectScopeOper.name;
+}
+export function signal(initialValue) {
+    return signalOper.bind({
+        currentValue: initialValue,
+        pendingValue: initialValue,
+        subs: undefined,
+        subsTail: undefined,
+        flags: 1,
+    });
+}
+export function computed(getter) {
+    return computedOper.bind({
+        value: undefined,
+        subs: undefined,
+        subsTail: undefined,
+        deps: undefined,
+        depsTail: undefined,
+        flags: 17,
+        getter: getter,
+    });
+}
+export function effect(fn) {
+    const e = {
+        fn,
+        subs: undefined,
+        subsTail: undefined,
+        deps: undefined,
+        depsTail: undefined,
+        flags: 2,
+    };
+    const prevSub = setActiveSub(e);
+    if (prevSub !== undefined) {
+        link(e, prevSub, 0);
+    }
+    try {
+        e.fn();
+    }
+    finally {
+        activeSub = prevSub;
+    }
+    return effectOper.bind(e);
+}
+export function effectScope(fn) {
+    const e = {
+        deps: undefined,
+        depsTail: undefined,
+        subs: undefined,
+        subsTail: undefined,
+        flags: 0,
+    };
+    const prevSub = setActiveSub(e);
+    if (prevSub !== undefined) {
+        link(e, prevSub, 0);
+    }
+    try {
+        fn();
+    }
+    finally {
+        activeSub = prevSub;
+    }
+    return effectScopeOper.bind(e);
+}
+function updateComputed(c) {
+    ++cycle;
+    c.depsTail = undefined;
+    c.flags = 5;
+    const prevSub = setActiveSub(c);
+    try {
+        const oldValue = c.value;
+        return oldValue !== (c.value = c.getter(oldValue));
+    }
+    finally {
+        activeSub = prevSub;
+        c.flags &= ~4;
+        purgeDeps(c);
+    }
+}
+function updateSignal(s) {
+    s.flags = 1;
+    return s.currentValue !== (s.currentValue = s.pendingValue);
+}
+function notify(e) {
+    const flags = e.flags;
+    if (!(flags & 64)) {
+        e.flags = flags | 64;
+        const subs = e.subs;
+        if (subs !== undefined) {
+            notify(subs.sub);
+        }
+        else {
+            queuedEffects[queuedEffectsLength++] = e;
+        }
+    }
+}
+function run(e, flags) {
+    if (flags & 16
+        || (flags & 32
+            && (checkDirty(e.deps, e)
+                || (e.flags = flags & ~32, false)))) {
+        ++cycle;
+        e.depsTail = undefined;
+        e.flags = 6;
+        const prevSub = setActiveSub(e);
+        try {
+            e.fn();
+        }
+        finally {
+            activeSub = prevSub;
+            e.flags &= ~4;
+            purgeDeps(e);
+        }
+    }
+    else {
+        let link = e.deps;
+        while (link !== undefined) {
+            const dep = link.dep;
+            const depFlags = dep.flags;
+            if (depFlags & 64) {
+                run(dep, dep.flags = depFlags & ~(64));
+            }
+            link = link.nextDep;
+        }
+    }
+}
+function flush() {
+    while (notifyIndex < queuedEffectsLength) {
+        const effect = queuedEffects[notifyIndex];
+        queuedEffects[notifyIndex++] = undefined;
+        run(effect, effect.flags &= ~(64));
+    }
+    notifyIndex = 0;
+    queuedEffectsLength = 0;
+}
+function computedOper() {
+    const flags = this.flags;
+    if (flags & 16
+        || (flags & 32
+            && (checkDirty(this.deps, this)
+                || (this.flags = flags & ~32, false)))) {
+        if (updateComputed(this)) {
+            const subs = this.subs;
+            if (subs !== undefined) {
+                shallowPropagate(subs);
+            }
+        }
+    }
+    const sub = activeSub;
+    if (sub !== undefined) {
+        link(this, sub, cycle);
+    }
+    return this.value;
+}
+function signalOper(...value) {
+    if (value.length) {
+        if (this.pendingValue !== (this.pendingValue = value[0])) {
+            this.flags = 17;
+            const subs = this.subs;
+            if (subs !== undefined) {
+                propagate(subs);
+                if (!batchDepth) {
+                    flush();
+                }
+            }
+        }
+    }
+    else {
+        if (this.flags & 16) {
+            if (updateSignal(this)) {
+                const subs = this.subs;
+                if (subs !== undefined) {
+                    shallowPropagate(subs);
+                }
+            }
+        }
+        let sub = activeSub;
+        while (sub !== undefined) {
+            if (sub.flags & 3) {
+                link(this, sub, cycle);
+                break;
+            }
+            sub = sub.subs?.sub;
+        }
+        return this.currentValue;
+    }
+}
+function effectOper() {
+    effectScopeOper.call(this);
+}
+function effectScopeOper() {
+    this.depsTail = undefined;
+    this.flags = 0;
+    purgeDeps(this);
+    const sub = this.subs;
+    if (sub !== undefined) {
+        unlink(sub);
+    }
+}
+function purgeDeps(sub) {
+    const depsTail = sub.depsTail;
+    let dep = depsTail !== undefined ? depsTail.nextDep : sub.deps;
+    while (dep !== undefined) {
+        dep = unlink(dep, sub);
+    }
+}
