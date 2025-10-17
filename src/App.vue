@@ -1,11 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterLink, RouterView } from "vue-router";
+import Home from "./components/Home.vue";
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <main>
+    <RouterView> </RouterView>
+  </main>
+  <!-- <Home /> -->
+  <RouterLink to="/neworder" >Go NewOrder</RouterLink>
+  <RouterLink to="/reports/123">Go Reports</RouterLink>
 </template>
 
 <style scoped></style>
