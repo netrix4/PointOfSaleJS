@@ -1,23 +1,17 @@
 <template>
-  <div class="mainContentReports">
-    <h3>This is Reports</h3>
-    <!-- <h2 style="color: #fff">
-      {{ $route.params.id }}
-    </h2> -->
-    <div v-if="$route.params">
-      <h2>
-        {{ $route.params.id }}
-      </h2>
-    </div>
-    <div v-else><h2>No params passed</h2></div>
-    <button class="accentButton" @click="() => $router.back()">Go Back</button>
+  <div class="mainContent2">
+    <h3>This is NewOrder</h3>
+    <!-- <RouterLink to="/">Home</RouterLink> -->
+    <button class="accentButton" @click="() => $router.back()">Go back</button>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup>
+console.log("Esto es neworders");
+</script>
 
 <style scoped>
-.mainContentReports {
+.mainContent2 {
   color: var(--font-color);
   font: var(--font-size-base);
   display: flex;
