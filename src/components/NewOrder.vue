@@ -9,8 +9,8 @@
     <div class="products"><p>this is products</p></div>
     <div class="summary">
       <div class="summaryHeader">
-        <button class="buttonExit" @click="() => $router.back()">
-          Go Back
+        <button class="buttonProfile" @click="() => $router.push('Profile')">
+          Go Profile
         </button>
       </div>
       <div class="summaryItems"><p>this is summarycheckout</p></div>
@@ -23,11 +23,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SideMenuItem from "./SideMenuItem.vue";
 </script>
 
-<style>
+<style scoped>
 .mainContentNewOrder {
   color: var(--font-color);
   font: var(--font-size-base);
@@ -90,7 +90,7 @@ import SideMenuItem from "./SideMenuItem.vue";
   align-items: center;
   justify-content: space-between;
 }
-.buttonExit {
+.buttonProfile {
   background-color: var(--secondary-color);
   font: var(--font-size-base);
   color: var(--font-color);

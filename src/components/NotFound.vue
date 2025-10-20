@@ -1,17 +1,15 @@
 <template>
-  <div class="mainContent2">
-    <h3>This is NewOrder</h3>
-    <!-- <RouterLink to="/">Home</RouterLink> -->
-    <button class="accentButton" @click="() => $router.back()">Go back</button>
+  <div class="mainContentReports">
+    <h3>Route Not Found</h3>
+    <img class="imageNotFound" src="../resources/404.png" />
+    <button class="accentButton" @click="() => $router.back()">Go Back</button>
   </div>
 </template>
 
-<script setup>
-console.log("Esto es neworders");
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
-.mainContent2 {
+.mainContentReports {
   color: var(--font-color);
   font: var(--font-size-base);
   display: flex;
@@ -21,6 +19,11 @@ console.log("Esto es neworders");
   padding: 2%;
   border-radius: 10%;
   background-color: var(--secondary-color);
+}
+.imageNotFound {
+  height: 180px;
+  width: 360px;
+  padding: 5%;
 }
 .accentButton {
   background-color: var(--accent-color);

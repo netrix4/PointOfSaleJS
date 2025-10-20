@@ -2,8 +2,9 @@
   <div class="mainContentHome">
     <p>You did it!</p>
     <p>This is home</p>
-    <RouterLink to="/reports">Go To reports</RouterLink>
-    <RouterLink to="/neworder">Go To NewOrder</RouterLink>
+    <!-- <RouterLink to="/reports">Go To reports</RouterLink>
+    <RouterLink to="/neworder">Go To NewOrder</RouterLink> -->
+    <RouterLink to="/login">Go To Login</RouterLink>
   </div>
 </template>
 
