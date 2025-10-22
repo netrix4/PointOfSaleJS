@@ -1,11 +1,4 @@
 <template>
-  <!-- <div class="mainContentLogin">
-  <p>This is home</p>
-  <RouterLink to="/reports">Go To reports</RouterLink>
-  <RouterLink to="/neworder">Go To NewOrder</RouterLink> 
-  <RouterLink to="/login">Go Login</RouterLink>
-</div> -->
-  <!-- <div class="login-container"> -->
   <div class="mainContentLogin">
     <h2>Iniciar Sesión</h2>
 
@@ -32,7 +25,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth";
@@ -54,9 +47,9 @@ const handleLogin = async () => {
   isLoading.value = false;
 
   if (loginError) {
-    error.value = loginError.message;
+    error.value = loginError.message as any;
   } else {
-    router.push("/login");
+    router.push("/neworder");
   }
 };
 </script>

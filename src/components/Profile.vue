@@ -1,21 +1,23 @@
 <template>
   <div class="mainContentHome">
-    <p v-if="authStore.isAuthenticated">Hola, {{ authStore.user.name }}!</p>
+    <!-- <p v-if="session">Hola, {{ user?.email }}!</p> -->
+    <p>Hola, usuario!</p>
     <p>This is your profile page</p>
     <button @click="handleLogout">Logout</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from "../stores/auth";
+import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
 
-const authStore: any = useAuthStore();
+const { signOut, getSession, getUser } = useAuth();
 const router = useRouter();
+// const session = await getSession();
+// const user = await getUser();
 
-const handleLogout = () => {
-  console.log("is auth?", authStore.isAuthenticated);
-  authStore.logout();
+const handleLogout = async () => {
+  await signOut();
   router.push("/");
 };
 </script>

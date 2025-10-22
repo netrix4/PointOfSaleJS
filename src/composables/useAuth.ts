@@ -4,6 +4,7 @@ import { supabase } from "../supabase";
 export const useAuth = () => {
   const user = ref(null);
   const loading = ref(true);
+  const session = ref();
 
   // Registrar usuario
   const signUp = async (email: any, password: any) => {
@@ -20,6 +21,7 @@ export const useAuth = () => {
       email,
       password,
     });
+    session.value = data.session as any;
     return { data, error };
   };
 
@@ -39,6 +41,14 @@ export const useAuth = () => {
     loading.value = false;
     return currentUser;
   };
+  // Obtener sesion actual
+  const getSession = async () => {
+    const { data } = await supabase.auth.getSession();
+    session.value = data.session;
+    loading.value = false;
+
+    return session.value;
+  };
 
   // Escuchar cambios de autenticación
   const authStateChange = () => {
@@ -48,13 +58,14 @@ export const useAuth = () => {
   };
 
   onMounted(() => {
-    getUser();
+    // getUser();
+    // getSession();
     authStateChange();
   });
 
   return {
-    user,
     loading,
+    getSession,
     signUp,
     signIn,
     signOut,

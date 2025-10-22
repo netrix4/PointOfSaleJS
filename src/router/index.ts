@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { supabase } from "@/supabase";
-import { useAuthStore } from "@/stores/auth";
+// import { useAuthStore } from "@/stores/auth";
+import { useAuth } from "@/composables/useAuth";
 
 const router = createRouter({
   // history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,30 +56,20 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach(async (to, from, next) => {
-  // const authStore = useAuthStore();
-  const authStore = useAuthStore();
-
-  // Verificar autenticación al iniciar
-  if (!authStore.isAuthenticated) {
-    await authStore.checkAuth();
-  }
+  const { getSession } = useAuth();
+  const session = await getSession();
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const requiresRole = to.meta.requiresRole;
 
-  if (requiresAuth && !authStore.isAuthenticated) {
+  if (requiresAuth && !session) {
     // Guardar la ruta a la que intentaba acceder
     next({
       name: "Login",
       query: { redirect: to.fullPath },
     });
   }
-  // else if (requiresRole && !requiresRole.includes(authStore.userRole)) {
-  //   // Usuario no tiene el rol necesario
-  //   next({ name: 'Home' })
-  // }
-  else if (to.name === "Login" && authStore.isAuthenticated) {
-    // Si ya está autenticado y va a login, redirigir a home
+  if (to.name === "Login" && session) {
+    // Si ya está autenticado y va a login, redirigir a neworder
     next({ name: "Order" });
   } else {
     next();
