@@ -2,21 +2,21 @@
   <div class="mainContentLogin">
     <h2>Iniciar Sesión</h2>
 
-    <form @submit.prevent="handleLogin">
-      <div>
-        <input v-model="email" type="email" placeholder="Email" required />
-      </div>
+    <form class="loginForm" @submit.prevent="handleLogin">
+      <!-- <div> -->
+      <input v-model="email" type="email" placeholder="Email" required />
+      <!-- </div> -->
 
-      <div>
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Contraseña"
-          required
-        />
-      </div>
+      <!-- <div> -->
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Contraseña"
+        required
+      />
+      <!-- </div> -->
 
-      <button type="submit" :disabled="isLoading">
+      <button class="accentButton" type="submit" :disabled="isLoading">
         {{ isLoading ? "Cargando..." : "Iniciar Sesión" }}
       </button>
     </form>
@@ -65,5 +65,31 @@ const handleLogin = async () => {
   padding: 2%;
   border-radius: 10%;
   background-color: var(--secondary-color);
+}
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+input {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  height: 30%;
+}
+.accentButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  font: var(--font-size-base);
+  color: var(--font-color);
+  width: 100px;
+  height: 70px;
+  border-radius: 10px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="mainContentReports">
     <h3>Route Not Found</h3>
-    <img class="imageNotFound" src="../resources/404.png" />
+    <img class="imageNotFound" src="/resources/404.png" />
     <button class="accentButton" @click="() => $router.back()">Go Back</button>
   </div>
 </template>
@@ -31,6 +31,6 @@
   color: var(--font-color);
   width: 100px;
   height: 35px;
-  border-radius: 10%;
+  border-radius: 10px;
 }
 </style>

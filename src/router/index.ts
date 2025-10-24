@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { supabase } from "@/supabase";
-// import { useAuthStore } from "@/stores/auth";
 import { useAuth } from "@/composables/useAuth";
 
 const router = createRouter({

@@ -1,10 +1,10 @@
 <template>
   <div class="mainContentHome">
-    <p>You did it!</p>
-    <p>This is home</p>
-    <!-- <RouterLink to="/reports">Go To reports</RouterLink>
-    <RouterLink to="/neworder">Go To NewOrder</RouterLink> -->
-    <RouterLink to="/login">Go To Login</RouterLink>
+    <p>¡Hola!</p>
+    <p>Te doy la bienvenida a<br />TuPuntoDeVenta</p>
+    <RouterLink to="/login"
+      ><div class="accentButton">Iniciar sesión</div>
+    </RouterLink>
   </div>
 </template>
 
@@ -20,8 +20,21 @@ import { RouterLink } from "vue-router";
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   padding: 2%;
   border-radius: 10%;
   background-color: var(--secondary-color);
+}
+.accentButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  font: var(--font-size-base);
+  color: var(--font-color);
+  width: 120px;
+  height: 35px;
+  border-radius: 10px;
 }
 </style>
