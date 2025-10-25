@@ -22,7 +22,14 @@
         :onSideMenuClick="onSideMenuClick"
       />
     </div>
-    <div class="products"><p>this is products</p></div>
+    <div class="products">
+      <SellingItem
+        v-for="product in dbResults"
+        :key="product.id"
+        :product="product"
+        :onItemClick="onChildItemClick"
+      />
+    </div>
     <div class="summary">
       <div class="summaryHeader">
         <button class="buttonProfile" @click="() => $router.push('Profile')">
@@ -32,7 +39,10 @@
       <div class="summaryItems"><p>this is summarycheckout</p></div>
       <div class="sumaryDetails">
         <div class="titles">
-          <p>Items<br />subtotal<br />Total<br /></p>
+          <p>
+            Items<br />subtotal<br />
+            <strong>Total</strong><br />
+          </p>
         </div>
         <div class="paymentNumbers">
           <p>{{ items }}<br />{{ subtotal }}<br />{{ total }}<br /></p>
@@ -48,15 +58,22 @@
 </template>
 
 <script setup lang="js">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { CATEGORIES } from "../Interfaces/Categories";
 import SideMenuItem from "./SideMenuItem.vue";
+import SellingItem from "./SellingItem.vue";
+import { getProducts } from "@/stores/storeProducts";
 
 const items=5
 const subtotal=500
 const total=600
 
 let clickedCategory = ref(CATEGORIES.NEW_ORDER);
+let dbResults = ref()
+
+const onChildItemClick = () =>{
+  console.log("Child componente clicked");
+}
 
 // const onSideMenuClick = (categoryParamter: String):void => {
 // clickedCategory.value = categoryParamter as CATEGORIES;
@@ -64,6 +81,17 @@ const onSideMenuClick = (categoryParamter)=> {
   clickedCategory.value = categoryParamter;
   console.log('Clickado', clickedCategory.value);
 };
+const getFromSupaBase = () => {
+  console.log("Getting products info");
+  getProducts().then((data) => {
+    dbResults.value = data;
+    console.log(dbResults.value);
+  });
+};
+
+onMounted(()=>{
+  getFromSupaBase()
+})
 </script>
 
 <style scoped>
@@ -76,7 +104,6 @@ const onSideMenuClick = (categoryParamter)=> {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  /* padding: 1%; */
 
   height: 100%;
   width: 100%;
@@ -85,22 +112,34 @@ const onSideMenuClick = (categoryParamter)=> {
   width: 10%;
   height: 100%;
   background-color: var(--primary-color);
+  border: 5px solid;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-color: var(--primary-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 .products {
+  border: 5px solid;
+  border-top: 0;
+  border-bottom: 0;
+  border-color: var(--primary-color);
   width: 45%;
   height: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  overflow: auto;
+  align-items: start;
+  align-content: start;
+  justify-content: start;
 }
 .summary {
-  border: 100px;
-  border-color: var(--accent-color);
+  border: 5px solid;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-color: var(--primary-color);
   width: 45%;
   height: 100%;
   display: flex;
@@ -130,6 +169,7 @@ const onSideMenuClick = (categoryParamter)=> {
   background-color: var(--primary-color);
   height: 10%;
   width: 90%;
+  font-size: calc(var(--font-size-base) * 1.2);
   /* max-width: 100%; */
   padding: 0% 5%;
   justify-content: space-between;
