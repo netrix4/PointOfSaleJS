@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 const props = defineProps(["product", "onItemClick"]);
-const handleItemClick = () => props.onItemClick();
+const handleItemClick = () => props.onItemClick(props.product.name);
 </script>
 
 <style scoped>

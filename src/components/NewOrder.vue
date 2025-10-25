@@ -71,8 +71,10 @@ const total=600
 let clickedCategory = ref(CATEGORIES.NEW_ORDER);
 let dbResults = ref()
 
-const onChildItemClick = () =>{
-  console.log("Child componente clicked");
+const onChildItemClick = (productName) =>{
+  const message = `Child componente clicked ${productName}`
+  console.log(message);
+  alert(message)
 }
 
 // const onSideMenuClick = (categoryParamter: String):void => {
