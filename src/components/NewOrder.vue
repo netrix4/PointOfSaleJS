@@ -1,24 +1,48 @@
+<script setup lang="js">
+import { onMounted, ref } from "vue";
+import { CATEGORIES } from "../Interfaces/Categories";
+import { getProducts } from "@/stores/storeProducts";
+import SideMenuItem from "./SideMenuItem.vue";
+import SellingItem from "./SellingItem.vue";
+
+const items=5
+const subtotal=500
+const total=600
+
+let clickedCategory = ref(CATEGORIES.NEW_ORDER);
+let dbResults = ref()
+let currentCart = ref([])
+
+const onChildItemClick = (productId) =>{
+  const result = dbResults.value.filter((product, resultIndex)=> product.id == productId)[0]
+  currentCart.value.push(result)
+  console.log(currentCart.value.length);
+}
+
+// const onSideMenuClick = (categoryParamter: String):void => {
+// clickedCategory.value = categoryParamter as CATEGORIES;
+const onSideMenuClick = (categoryParamter)=> {
+  clickedCategory.value = categoryParamter;
+  console.log('Clickado', clickedCategory.value);
+};
+const getFromSupaBase = () => {
+  getProducts().then((data) => {
+    dbResults.value = data;
+  });
+};
+
+onMounted(()=>{
+  getFromSupaBase()
+})
+</script>
+
 <template>
   <div class="mainContentNewOrder">
     <div class="sideOptions">
       <SideMenuItem
-        :side-name="CATEGORIES.NEW_ORDER"
-        :is-selected="clickedCategory === CATEGORIES.NEW_ORDER"
-        :onSideMenuClick="onSideMenuClick"
-      />
-      <SideMenuItem
-        :side-name="CATEGORIES.RESPORTS"
-        :is-selected="clickedCategory === CATEGORIES.RESPORTS"
-        :onSideMenuClick="onSideMenuClick"
-      />
-      <SideMenuItem
-        :side-name="CATEGORIES.PROFILE"
-        :is-selected="clickedCategory === CATEGORIES.PROFILE"
-        :onSideMenuClick="onSideMenuClick"
-      />
-      <SideMenuItem
-        :side-name="CATEGORIES.OTHER"
-        :is-selected="clickedCategory === CATEGORIES.OTHER"
+        v-for="Category in CATEGORIES"
+        :side-name="Category"
+        :is-selected="clickedCategory === Category"
         :onSideMenuClick="onSideMenuClick"
       />
     </div>
@@ -36,7 +60,32 @@
           Go Profile
         </button>
       </div>
-      <div class="summaryItems"><p>this is summarycheckout</p></div>
+      <div class="summaryItems">
+        <div
+          v-if="currentCart.length < 1"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+          "
+        >
+          <p>Sin productos todavia</p>
+        </div>
+        <div v-else>
+          <div class="summaryItemsHeader">
+            <p>Nombre del Producto</p>
+            <p>Precio</p>
+            <p>Accion</p>
+          </div>
+          <div class="cartItem" v-for="cartItem in currentCart">
+            <p>{{ cartItem.name }}</p>
+            <p>${{ cartItem.price }}</p>
+            <button>🗑 Eliminar</button>
+          </div>
+        </div>
+      </div>
       <div class="sumaryDetails">
         <div class="titles">
           <p>
@@ -45,56 +94,19 @@
           </p>
         </div>
         <div class="paymentNumbers">
-          <p>{{ items }}<br />{{ subtotal }}<br />{{ total }}<br /></p>
+          <p>
+            {{ currentCart.length }}<br />{{ subtotal }}<br />{{ total }}<br />
+          </p>
         </div>
       </div>
       <div class="summaryButtonsContainer">
-        <div class="button">🚫 Cancel</div>
-        <div class="button">💾 Save</div>
-        <div class="checkoutButton">🛒 Checkout</div>
+        <div class="button">🚫 Cancelar</div>
+        <div class="button">💾 Guardar</div>
+        <div class="checkoutButton">🛒 Pagar</div>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="js">
-import { onMounted, ref } from "vue";
-import { CATEGORIES } from "../Interfaces/Categories";
-import SideMenuItem from "./SideMenuItem.vue";
-import SellingItem from "./SellingItem.vue";
-import { getProducts } from "@/stores/storeProducts";
-
-const items=5
-const subtotal=500
-const total=600
-
-let clickedCategory = ref(CATEGORIES.NEW_ORDER);
-let dbResults = ref()
-
-const onChildItemClick = (productName) =>{
-  const message = `Child componente clicked ${productName}`
-  console.log(message);
-  alert(message)
-}
-
-// const onSideMenuClick = (categoryParamter: String):void => {
-// clickedCategory.value = categoryParamter as CATEGORIES;
-const onSideMenuClick = (categoryParamter)=> {
-  clickedCategory.value = categoryParamter;
-  console.log('Clickado', clickedCategory.value);
-};
-const getFromSupaBase = () => {
-  console.log("Getting products info");
-  getProducts().then((data) => {
-    dbResults.value = data;
-    console.log(dbResults.value);
-  });
-};
-
-onMounted(()=>{
-  getFromSupaBase()
-})
-</script>
 
 <style scoped>
 .mainContentNewOrder {
@@ -157,13 +169,25 @@ onMounted(()=>{
   align-items: center;
   justify-content: right;
 }
+.summaryItemsHeader {
+  justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+}
 .summaryItems {
   height: 70%;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* align-items: center; */
+  justify-content: flex-start;
+}
+.cartItem {
+  width: 100%;
+  background-color: rgb(9, 139, 139);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 .sumaryDetails {
   display: flex;
