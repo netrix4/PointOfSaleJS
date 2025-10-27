@@ -2,7 +2,6 @@
   <div class="mainContentHome">
     <p>¡Hola!</p>
     <p>Te doy la bienvenida a<br />TuPuntoDeVenta</p>
-    <button @click="getFromSupaBase">Select * from</button>
     <RouterLink to="/login"
       ><div class="accentButton">Iniciar sesión</div>
     </RouterLink>
@@ -10,21 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { getProducts } from "@/stores/storeProducts";
-import { ref } from "vue";
 import { RouterLink } from "vue-router";
-
-const dbResults = ref();
-
-const getFromSupaBase = () => {
-  console.log("Clickeado xd");
-  getProducts().then((data) => {
-    dbResults.value = data;
-    console.log(dbResults.value);
-  });
-};
-getFromSupaBase()
-console.log(dbResults.value);
 </script>
 
 <style scoped>

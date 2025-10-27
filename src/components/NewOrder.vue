@@ -1,7 +1,7 @@
 <script setup lang="js">
 import { onMounted, ref } from "vue";
 import { CATEGORIES } from "../Interfaces/Categories";
-import { getProducts } from "@/stores/storeProducts";
+import { getProducts, insertFixedCheckout, insertCheckout } from "@/stores/storeProducts";
 import SideMenuItem from "./SideMenuItem.vue";
 import SellingItem from "./SellingItem.vue";
 
@@ -10,29 +10,46 @@ const subtotal=500
 const total=600
 
 let clickedCategory = ref(CATEGORIES.NEW_ORDER);
-let dbResults = ref()
+let dbResults = ref([])
 let currentCart = ref([])
 
 const onChildItemClick = (productId) =>{
   const result = dbResults.value.filter((product, resultIndex)=> product.id == productId)[0]
   currentCart.value.push(result)
-  console.log(currentCart.value.length);
 }
 
-// const onSideMenuClick = (categoryParamter: String):void => {
-// clickedCategory.value = categoryParamter as CATEGORIES;
 const onSideMenuClick = (categoryParamter)=> {
   clickedCategory.value = categoryParamter;
-  console.log('Clickado', clickedCategory.value);
 };
-const getFromSupaBase = () => {
+
+const getProductsOnLoading = () => {
   getProducts().then((data) => {
     dbResults.value = data;
   });
 };
+const createCheckout = (newCheckOut) =>{
+  // insertFixedCheckout().then((data, error)=>{console.log(data, error);})
+  insertCheckout(newCheckOut).then((data)=>{console.log('Compra guardada');})
 
+}
+
+const onCheckOutClick = () =>{
+  if (currentCart?.value?.length === 0) {
+    alert('Primero selecciona productos')
+  }
+  else{
+    let newCheckOut = {
+      total : currentCart.value.reduce((accumulator, currentItem) => accumulator += currentItem.price, 0),
+      products_quantity : currentCart.value.length,
+      products_ids : currentCart.value.map((cartItem)=> cartItem.id)
+    }
+
+    createCheckout(newCheckOut)
+
+  }
+}
 onMounted(()=>{
-  getFromSupaBase()
+  getProductsOnLoading()
 })
 </script>
 
@@ -102,7 +119,7 @@ onMounted(()=>{
       <div class="summaryButtonsContainer">
         <div class="button">🚫 Cancelar</div>
         <div class="button">💾 Guardar</div>
-        <div class="checkoutButton">🛒 Pagar</div>
+        <div class="checkoutButton" @click="onCheckOutClick">🛒 Pagar</div>
       </div>
     </div>
   </div>
@@ -181,6 +198,7 @@ onMounted(()=>{
   flex-direction: column;
   /* align-items: center; */
   justify-content: flex-start;
+  overflow: auto;
 }
 .cartItem {
   width: 100%;
