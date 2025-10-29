@@ -14,6 +14,7 @@ import { RouterLink, RouterView } from "vue-router";
   --secondary-color: #1d1d1e;
   --terciary-color: #7d7d82;
   --accent-color: #b4458d;
+  --secondary-accent-color: #098b8b;
   --second-accent-color: #c81c1c;
   --font-size-base: 16px;
   --font-color: #fff;
