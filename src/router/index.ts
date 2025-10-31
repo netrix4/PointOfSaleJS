@@ -8,46 +8,46 @@ const router = createRouter({
     {
       path: "/",
       name: "Home",
-      component: () => import("../components/Home.vue"),
+      component: () => import("../Views/Home.vue"),
     },
     {
       path: "/login",
       name: "Login",
-      component: () => import("../components/Login.vue"),
+      component: () => import("../Views/Login.vue"),
     },
     {
       path: "/neworder",
       name: "Order",
-      component: () => import("../components/NewOrder.vue"),
+      component: () => import("../Views/NewOrder.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/profile",
       name: "Profile",
-      component: () => import("../components/Profile.vue"),
+      component: () => import("../Views/Profile.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/reports/:id",
       name: "ReportsWithId",
-      component: () => import("../components/Reports.vue"),
+      component: () => import("../Views/Reports.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/reports",
       name: "Reports",
-      component: () => import("../components/Reports.vue"),
+      component: () => import("../Views/Reports.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/qwerty",
       name: "qwerty",
-      component: () => import("../components/Home.vue"),
+      component: () => import("../Views/Home.vue"),
     },
     {
       path: "/:pathMatch(.*)*", // Matches any path
       name: "NotFound",
-      component: () => import("../components/NotFound.vue"), // Your 404 component
+      component: () => import("../Views/NotFound.vue"), // Your 404 component
     },
   ],
 });

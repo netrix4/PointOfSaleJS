@@ -1,6 +1,6 @@
 export enum CATEGORIES {
   NEW_ORDER = "NewOrder",
-  RESPORTS = "Reports",
+  REPORTS = "Reports",
   PROFILE = "Profile",
   OTHER = "Other",
 }

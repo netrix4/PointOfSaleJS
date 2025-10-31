@@ -1,5 +1,5 @@
 <template>
-  <div
+  <button
     :class="
       componentProp.isSelected
         ? 'mainContentSideMenuSelected'
@@ -10,7 +10,7 @@
     <!-- <img src="../resources/cart.png" class="sideImage" /> -->
     <img :src="`/resources/${componentProp.sideName}.png`" class="sideImage" />
     <p>{{ sideName }}</p>
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -43,6 +43,7 @@ const componentProp = defineProps<sideItemPropps>();
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: none;
 }
 
 .mainContentSideMenuSelected {

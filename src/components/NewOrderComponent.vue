@@ -1,9 +1,92 @@
+<template>
+  <div class="products">
+    <SellingItem
+      v-for="product in dbResults"
+      :key="product.id"
+      :product="product"
+      :onItemClick="onChildItemClick"
+    />
+  </div>
+  <div class="summary">
+    <div class="summaryHeader">
+      <button class="buttonProfile" @click="() => $router.push('Profile')">
+        Ir a Perfil
+      </button>
+    </div>
+    <div class="summaryItems">
+      <div
+        v-if="currentCart.length < 1"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: center;
+          height: 100%;
+        "
+      >
+        <p>Sin productos todavia</p>
+      </div>
+      <table class="summaryItemsTableContainer" v-else>
+        <thead>
+          <tr>
+            <th>Nombre del Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cartItem" v-for="cartItem in currentCart">
+            <td class="cartItemData">{{ cartItem.name }}</td>
+            <td class="cartItemData">${{ cartItem.price }}</td>
+            <td class="cartItemData">{{ cartItem.quantity }}</td>
+            <td class="cartItemData">
+              <button @click="onDeleteItem(cartItem.id)" class="checkoutButton">
+                🗑 Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="itemCodeInputContainer">
+      <input
+        type="text"
+        class="codeInput"
+        placeholder="Ingresa o escanea producto"
+        :value="inputCodeValue"
+        ref="scanInputRef"
+        :onchange="onCodeTextChange"
+      />
+    </div>
+    <div class="sumaryDetails">
+      <div class="titles">
+        <p>
+          No. Artículos<br />Subtotal<br />
+          <strong>Total</strong><br />
+        </p>
+      </div>
+      <div class="paymentNumbers">
+        <p>
+          {{ getTotalItems() }}<br />{{ getSubTotalToPay() }}<br />{{
+            getTotalToPay()
+          }}<br />
+        </p>
+      </div>
+    </div>
+    <div class="summaryButtonsContainer">
+      <button class="button" @click="onDeleteCart">🚫 Cancelar</button>
+      <button class="checkoutButton" @click="onCheckOutClick">🛒 Pagar</button>
+    </div>
+  </div>
+</template>
+
 <script setup lang="js">
+
 import { onMounted, ref } from "vue";
-import { CATEGORIES } from "../Interfaces/Categories";
 import { getProducts, insertCheckout } from "@/stores/storeProducts";
-import SideMenuItem from "./SideMenuItem.vue";
 import SellingItem from "./SellingItem.vue";
+import { CATEGORIES } from "../Interfaces/Categories";
 
 
 let clickedCategory = ref(CATEGORIES.NEW_ORDER);
@@ -59,9 +142,6 @@ const onDeleteItem = (productId) =>{
   currentCart.value = currentCart.value.filter((product)=>product.id !== productId)
 }
 
-const onSideMenuClick = (categoryParamter)=> {
-  clickedCategory.value = categoryParamter;
-};
 
 const getProductsOnLoading = () => {
   getProducts().then((data) => {
@@ -95,132 +175,7 @@ onMounted(()=>{
 })
 </script>
 
-<template>
-  <div class="mainContentNewOrder">
-    <div class="sideOptions">
-      <SideMenuItem
-        v-for="Category in CATEGORIES"
-        :side-name="Category"
-        :is-selected="clickedCategory === Category"
-        :onSideMenuClick="onSideMenuClick"
-      />
-    </div>
-    <div class="products">
-      <SellingItem
-        v-for="product in dbResults"
-        :key="product.id"
-        :product="product"
-        :onItemClick="onChildItemClick"
-      />
-    </div>
-    <div class="summary">
-      <div class="summaryHeader">
-        <button class="buttonProfile" @click="() => $router.push('Profile')">
-          Go Profile
-        </button>
-      </div>
-      <div class="summaryItems">
-        <div
-          v-if="currentCart.length < 1"
-          style="
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            height: 100%;
-          "
-        >
-          <p>Sin productos todavia</p>
-        </div>
-        <table class="summaryItemsTableContainer" v-else>
-          <thead>
-            <tr>
-              <th>Nombre del Producto</th>
-              <th>Precio</th>
-              <th>Cantidad xd</th>
-              <th>Accion</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="cartItem" v-for="cartItem in currentCart">
-              <td class="cartItemData">{{ cartItem.name }}</td>
-              <td class="cartItemData">${{ cartItem.price }}</td>
-              <td class="cartItemData">{{ cartItem.quantity }}</td>
-              <td class="cartItemData">
-                <button
-                  @click="onDeleteItem(cartItem.id)"
-                  class="checkoutButton"
-                >
-                  🗑 Eliminar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="itemCodeInputContainer">
-        <input
-          type="text"
-          class="codeInput"
-          placeholder="Ingresa o escanea producto"
-          :value="inputCodeValue"
-          ref="scanInputRef"
-          :onchange="onCodeTextChange"
-        />
-      </div>
-      <div class="sumaryDetails">
-        <div class="titles">
-          <p>
-            Items<br />subtotal<br />
-            <strong>Total</strong><br />
-          </p>
-        </div>
-        <div class="paymentNumbers">
-          <p>
-            {{ getTotalItems() }}<br />{{ getSubTotalToPay() }}<br />{{
-              getTotalToPay()
-            }}<br />
-          </p>
-        </div>
-      </div>
-      <div class="summaryButtonsContainer">
-        <button class="button" @click="onDeleteCart">🚫 Cancelar</button>
-        <!-- <button class="button">💾 Guardar</button> -->
-        <button class="checkoutButton" @click="onCheckOutClick">
-          🛒 Pagar
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-.mainContentNewOrder {
-  color: var(--font-color);
-  font: var(--font-size-base);
-  background-color: var(--secondary-color);
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-
-  height: 100%;
-  width: 100%;
-}
-.sideOptions {
-  width: 10%;
-  height: 100%;
-  background-color: var(--primary-color);
-  border: 5px solid;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-color: var(--primary-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
 .products {
   border: 5px solid;
   border-top: 0;
