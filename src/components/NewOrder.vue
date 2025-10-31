@@ -1,7 +1,7 @@
 <script setup lang="js">
 import { onMounted, ref } from "vue";
 import { CATEGORIES } from "../Interfaces/Categories";
-import { getProducts, insertFixedCheckout, insertCheckout } from "@/stores/storeProducts";
+import { getProducts, insertCheckout } from "@/stores/storeProducts";
 import SideMenuItem from "./SideMenuItem.vue";
 import SellingItem from "./SellingItem.vue";
 
@@ -12,11 +12,7 @@ let currentCart = ref([])
 const scanInputRef = ref()
 const inputCodeValue = ref()
 
-const subtotal = ref(0)
-const total = ref(0)
 const IVA = 0.16
-
-
 
 const getTotalItems = ()=> (currentCart.value.reduce((acumulator, current)=>acumulator+current.quantity,0))
 const getSubTotalToPay = ()=> (currentCart.value.reduce((acumulator, current)=>acumulator+(current.quantity*current.price),0).toFixed(2))
@@ -151,7 +147,12 @@ onMounted(()=>{
               <td class="cartItemData">${{ cartItem.price }}</td>
               <td class="cartItemData">{{ cartItem.quantity }}</td>
               <td class="cartItemData">
-                <button @click="onDeleteItem(cartItem.id)">🗑 Eliminar</button>
+                <button
+                  @click="onDeleteItem(cartItem.id)"
+                  class="checkoutButton"
+                >
+                  🗑 Eliminar
+                </button>
               </td>
             </tr>
           </tbody>
@@ -279,6 +280,11 @@ onMounted(()=>{
   width: 100%;
 
   background-color: var(--secondary-accent-color);
+}
+.cartItemData {
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }
 .itemCodeInputContainer {
   background-color: var(--primary-color);
