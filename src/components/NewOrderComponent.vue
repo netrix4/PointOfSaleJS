@@ -85,7 +85,7 @@
             <div class="modal">
               <strong>Cobro realizado con exito</strong>
               <button type="button" class="accentButton" @click="toogleModal">
-                Cerrar modal
+                Cerrar
               </button>
             </div>
           </div>
