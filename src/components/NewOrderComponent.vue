@@ -78,6 +78,20 @@
       <button class="button" @click="onDeleteCart">🚫 Cancelar</button>
       <button class="checkoutButton" @click="onCheckOutClick">🛒 Pagar</button>
     </div>
+    <div>
+      <Teleport to="#modal">
+        <Transition name="modal">
+          <div class="modal-bg" v-if="showModal">
+            <div class="modal">
+              <strong>Cobro realizado con exito</strong>
+              <button type="button" class="accentButton" @click="toogleModal">
+                Cerrar modal
+              </button>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
+    </div>
   </div>
 </template>
 
@@ -94,9 +108,18 @@ let dbResults = ref([])
 let currentCart = ref([])
 const scanInputRef = ref()
 const inputCodeValue = ref()
+const showModal = ref(false)
 
 const IVA = 0.16
 
+const toogleModal = ()=> {
+  if (showModal.value){
+    showModal.value = false
+  }
+  else {
+    showModal.value = true
+  }
+}
 const getTotalItems = ()=> (currentCart.value.reduce((acumulator, current)=>acumulator+current.quantity,0))
 const getSubTotalToPay = ()=> (currentCart.value.reduce((acumulator, current)=>acumulator+(current.quantity*current.price),0).toFixed(2))
 const getTotalToPay = ()=> {
@@ -155,19 +178,19 @@ const createCheckout = (newCheckOut) =>{
 }
 
 const onCheckOutClick = () =>{
-  if (currentCart?.value?.length === 0) {
-    alert('Primero selecciona productos')
-  }
-  else{
-    let newCheckOut = {
-      total : currentCart.value.reduce((accumulator, currentItem) => accumulator += currentItem.price, 0),
-      products_quantity : currentCart.value.length,
-      products_ids : currentCart.value.map((cartItem)=> cartItem.id)
-    }
+  // if (currentCart?.value?.length === 0) {
+  //   alert('Primero selecciona productos')
+  // }
+  // else{
+    // let newCheckOut = {
+    //   total : currentCart.value.reduce((accumulator, currentItem) => accumulator += currentItem.price, 0),
+    //   products_quantity : currentCart.value.length,
+    //   products_ids : currentCart.value.map((cartItem)=> cartItem.id)
+    // }
 
-    createCheckout(newCheckOut)
-
-  }
+    // createCheckout(newCheckOut)
+    toogleModal()
+  // }
 }
 onMounted(()=>{
   getProductsOnLoading()
@@ -229,8 +252,8 @@ onMounted(()=>{
   text-align: center;
   border-spacing: 0px;
 }
-.summaryItemsTableContainer td {
-}
+/* .summaryItemsTableContainer td {
+} */
 .cartItem {
   width: 100%;
 
@@ -312,5 +335,54 @@ onMounted(()=>{
 }
 .checkoutButton {
   background-color: var(--accent-color);
+}
+
+.accentButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  font: var(--font-size-base);
+  color: var(--font-color);
+  width: 150px;
+  height: auto;
+  padding: 10px 0px;
+  border-radius: 10px;
+}
+.modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: var(--primary-color);
+  color: var(--font-color);
+  font-size: var(--font-size-base);
+
+  padding: 50px 100px;
+  border-radius: 10px;
+  box-shadow: 0px 10px 5px 2px rgba(0, 0, 0, 0.1);
+}
+.moda-enter-active,
+.moda-leave-active {
+  transition: all 0.25s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(1.1);
 }
 </style>
