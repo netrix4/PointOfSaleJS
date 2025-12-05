@@ -49,7 +49,17 @@ const handleLogin = async () => {
   if (loginError) {
     error.value = loginError.message as any;
   } else {
-    router.push("/neworder");
+    // else {
+    //   router.push("/neworder");
+    // }
+    
+    // ADMIN LOGIN
+    if (email.value === "admin@admin.com" && password.value === "123456") {
+      router.push("/admin");
+      return;
+    } else {
+      router.push("/neworder");
+    }
   }
 };
 </script>

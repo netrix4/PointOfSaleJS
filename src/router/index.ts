@@ -15,10 +15,17 @@ const router = createRouter({
       name: "Login",
       component: () => import("../Views/Login.vue"),
     },
+    // nueva ruta para admin
+    {
+      path: "/admin",
+      name: "Admin",
+      component: () => import("../Views/Admin.vue"),
+      meta: { requiresAuth: true },
+    },
     {
       path: "/neworder",
       name: "Order",
-      component: () => import("../Views/NewOrder.vue"),
+      component: () => import("../Views/NewOrder.vue" as any),
       meta: { requiresAuth: true },
     },
     {
